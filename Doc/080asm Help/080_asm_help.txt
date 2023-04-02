@@ -1,0 +1,14 @@
+Quick 080 assemble
+
+
+Make the Devpac/Src folder the active one.
+type: <amiga>E CLI
+
+type: EXECUTE ATTNFLAGS_SCRIPT  (Assemble using VASM)
+ a 194 byte file 'attnflags' is created.
+ and when there are no errors the debugger shows the generate program.
+ 
+control-C (quit task running?)
+Y
+
+click attnflags.s or open it in any editor, that is the source file.

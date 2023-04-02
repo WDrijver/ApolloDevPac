@@ -1,0 +1,34 @@
+; assemble script for VASM explaned.
+;
+; make 68k code, amiga format, create this_file from this_source
+; vasmm68k_mot -Fhunkexe -o ram:yourexe sdcard:yoursource
+;
+; -o ram:test code.s (create this_file from this_source)
+;  options:
+; -m68080
+; -I/include        (search in these folders also)
+; -maxerrors=1
+; -quiet            (no welcome message)
+; -showopt          (print optimisations and translations vasm does)
+; -kick1hunks       (for label names in devpac debug)
+; -no-opt	    (disable all optimisations - quicker?) 
+; -nosym            (no symbol table)
+;vasmm68k_mot -ISrc -Fhunkexe -quiet -maxerrors=1 -m68080 -o ram:yourexe sdcard:yoursource
+;vasmm68k_mot -Fhunkexe -kick1hunks -m68020up -no-opt -quiet -o ram:test tst.s
+;vasmm68k_mot -Fhunkexe -kick1hunks -nosym -no-opt -m68020up -m68851 -o ram:Mon MonAm.s
+;/VASM/vasmm68k_mot -Fhunkexe -kick1hunks -m68080 -quiet -o ram:test src/snippets.s
+;
+;
+; layout
+//VASM/vasmm68k_mot -Fhunkexe -kick1hunks -m68080 -linedebug -I/Include -quiet -o attnflags attnflags.s
+;
+; //VASM/vasmm68k_mot       Lokation of vasmm68k_mot relative to this folder.
+; -Fhunkexe                 Make amiga program
+; -kick1hunks               Old hunks so the old debugger can grab symbol & line_debug information
+; -m68080
+; -linedebug                So MonAm use the source_text. (not needed)
+; -I/Include                Lokation of include_folder relative to this folder.
+; -quiet                    only vital messages like errors
+; -o ram:test attnflags.s   output ram:your_exe your_source
+;
+; 'execute a' will proces this text.

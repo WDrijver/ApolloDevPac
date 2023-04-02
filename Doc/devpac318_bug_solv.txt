@@ -1,0 +1,26 @@
+Why are there two Devpacs?
+
+************************
+BUG in devpac3.18-editor
+************************
+
+
+see picture devpac318bug_workaround.jpg
+
+
+Editor Devpac3.18 loads:
+Devpac.prefs - the settings the editor uses.
+GenAm.opts   - the options used when calling the assembler.
+
+The last file can not be saved anymore.
+But Devpac304 can!
+
+When you changes assembler options in devpac318 that works fine.
+But they are lost when you quit.
+
+If you run devpac304 you can change and save these.
+Or you can edit the file and change it.
+
+
+if you add relative folders with the selector
+to the include list: put '/' before its path.

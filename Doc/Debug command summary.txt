@@ -1,0 +1,104 @@
+-> page reference, see devpac 3 manual.
+archive.org/details/DevPac_v3.00.Manual (pdf can be downloaded)
+
+****************************
+* Command Summary Debugger * page 180
+****************************
+
+Window Commands
+ A A or M set Address
+ A B set Breakpoint
+*A C Change Register window
+ A E Edit view
+ A G Goto source line
+*A H HighLight (previously Help and breakpoints)
+ A L Lock to expression
+*A M Memorie 0-$8000 & DFExxx on/off
+*A O Offset mem window on/off
+ A P Print window
+ A R Register set (includes 080 registers)
+ A S Split window 2/3/4/5
+ A T change Type
+ A W Widen window 2/4
+*A Y sYmbolic hardware on/off
+ A Z Zoom window
+ Shift-. open view
+ Shift-, close view
+ . and , next/previous view
+ Esc update all windows
+ Tab activate next window
+ A 1-5 Activate window 1 to 5 
+ arrow up/down/left/right move content
+ Shift-arrow up/down      move content (page up/down)
+*ctrl-arrow up/down window 1
+*ctrl-arrows window 2,3,4 & 5
+
+Breakpoints
+ Ctrl-A breakpoint After
+ Ctrl-B Breakpoint
+ Ctrl-K Kill breakpoints
+ Ctrl-X stop eXecuting
+ A B set Breakpoint addr[, n=*?-]
+ U run Until (same as <A>B + ctrlR) 
+ Help show Help and breakpoints 
+
+Loading and Saving
+ Ctrl-L Load program    (60 char max)
+ A load Ascii file
+ B load Binary file
+ S Save binary file 
+
+Executing Programs
+ Ctrl-R Return to program / Run
+ Ctrl-S Skip instruction
+ Ctrl-T Trace instruction (= breakpoint after instruction)
+*Ctrl-T Timed routine (080 only)
+ Ctrl-W/Y/Z Single-Step (uses trace_on_any_instruction bit, you need a trace-core!)
+*R Run: Go Instruction Change Equal Rts Pc Opcode
+
+Searching Memory
+ G search memory (Get a sequence)
+ N find Next 
+
+Miscellaneous
+ Ctrl-C or <A>Q  Exit MonAm
+ Ctrl-Q Quit program
+ Ctrl-P Preferences
+ Ctrl-U Unload symbols
+ O show Other bases  (not <A>O as manual states)
+ D change Drive & Directory
+ H show History buffer
+ I Intelligent copy
+ L list Labels
+ A A or M Modify Address
+ P disassemble to Printer/disk
+ W fill memory With 
+*T Transfer any quad register to any other (080 only)
+ V View other screen
+
+Amiga system functions 
+LA N Workbench screen to front
+LA M Front screen to back (mouse_click to activate) similair to 'View other screen'
+
+
+********************
+* Memory Registers * page 153
+********************
+
+m0 destination (ea) of curent instruction
+m1..5 start addr of window 1..5  (*& o1..5 offset)
+m6 spare
+m7 start addr of stored extended registers
+m8 start addr of binary file that has been loaded
+m9 end addr of binary file that has been loaded
+
+
+****************
+* window types * page 154
+****************
+
+1 register, disassembly, source, extended register, memory
+2 disassembly, source, memory
+3 memory
+4 disassembly, source, extended register, copr, memory
+5 memory, disassembly, source, extended register, copr

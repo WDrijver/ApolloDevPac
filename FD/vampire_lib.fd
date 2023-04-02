@@ -1,0 +1,11 @@
+##base _VampireBase
+##bias 6
+##public
+V_AllocExpansionPort(unitNum,name)(D0,A1)
+V_FreeExpansionPort(unitNum)(D0)
+V_DetectBoard()()
+V_GetBoardSerialNumber(charBuf)(A0)
+V_GetCoreRevisionString(charBuf)(A0)
+V_SetFlags(flags)(D0)
+V_ClearFlags(flags)(D0)
+##end

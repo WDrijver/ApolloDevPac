@@ -1,0 +1,60 @@
+Beginners:
+----------
+
+src/plot_pixel.s is a text_file that can be viewed.
+It can be converted to a program_file.
+In the debugger we can see what every instruction does.
+
+You can later add/change to see what happens.
+Lets see what it does.
+
+
+
+Lets do it:
+-----------
+Click devpac or start
+
+Menu: Project/Load          a text-file
+ Src/plot_pixel.s
+
+Menu: Program/Assemble      makes program-file from text-file
+ window assembling
+
+Menu: Program/Debug         starts monam with that program-file
+ Follow the instructions in window4.
+ <amiga>Q Quits.
+
+
+
+
+More:
+-----
+
+Try:
+ joy_sep.s  a short one
+ float.s    FPU
+ attnflag.s use os-calls, but has no walktrough
+in examples map is more
+
+ afloat.s
+ snippets.s
+Give errors in devpac because they use 080 instructions.
+
+
+
+68080:
+------
+For 080 instructions we have to take a different way.
+
+-Make the Devpac/Src folder the active one.
+-type: <amiga>E CLI
+
+type: execute afloat_script  (Assemble using VASM)
+ a file is created and given to the debugger.
+ or when there are errors the text shows where to find them.
+
+
+
+Help:
+-----
+Having a printed "Debug Command Summary.txt" could be helpfull.

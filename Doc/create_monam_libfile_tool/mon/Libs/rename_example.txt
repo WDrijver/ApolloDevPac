@@ -1,0 +1,99 @@
+_LVOAllocFileRequest	EQU	-30
+_LVOFreeFileRequest	EQU	-36
+_LVORequestFile	EQU	-42
+
+*************
+* 2 renames *
+*************
+
+rename "_LVO" to "
+
+   dc.l    4
+   dc.b    '"
+
+rename "	EQU	" to "
+'
+   ALIGN 2   
+   dc.w    asl,"
+
+and simply
+asl EQU 5    ; first lib after the 4 default ones.
+
+**************
+* result in: *
+**************
+
+   dc.l    4
+   dc.b    'AllocFileRequest'
+   ALIGN 2   
+   dc.w    asl,-30
+
+   dc.l    4
+   dc.b    'FreeFileRequest'
+   ALIGN 2   
+   dc.w    asl,-36
+
+   dc.l    4
+   dc.b    'RequestFile'
+   ALIGN 2   
+   dc.w    asl,-42
+
+
+***********************************************************
+
+lib_src_lib.s > source libfile format
+
+rename "_" to "
+
+   dc.l    4
+   dc.b    '"
+
+rename "	EQU	" to "
+'
+   ALIGN 2   
+   dc.w    asl,"
+
+***********************************************************
+
+lib_src_custom.s > source regfile format
+cia rename
+
+rename "_" to "
+
+   dc.l    2
+   dc.b    '"
+
+rename "	EQU	$" to "
+'
+   ALIGN 2   
+   dc.l    $DFF"
+
+***********************************************************
+
+lib_src_cia.s > source regfile format
+cia rename
+
+rename "&" to "
+
+   dc.l    2
+   dc.b    '"
+
+rename "	EQU	" to "
+'
+   ALIGN 2   
+   dc.l    "
+
+***********************************************************
+
+lib_src_vbr.s > source vbrfile format
+cia rename
+
+rename "&" to "
+
+   dc.l    2
+   dc.b    '"
+
+rename "	EQU	" to "
+'
+   ALIGN 2   
+   dc.l    "

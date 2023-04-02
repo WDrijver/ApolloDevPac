@@ -1,0 +1,966 @@
+MonAm vamped, for your vampire ac68080.
+This document mentions the changes made to MonAm 3.08.
+
+
+
+Once upon a time...
+Well, actually 7 jun on a forum:
+
+>BigGun:
+ Do you want to do this for Asmone?
+>Kamelito:
+ I like to try not sure that if I am competent enough but I am more
+ interested in having Monam being able to disassemble code correctly 
+>Tommo:
+ I will help with that if i can.
+
+The first MonAm 3.09 beta was released end of that month.
+It disassembled pretty much all 080 instructions.
+
+
+
+
+
+
+         1997 - 2022
+*****************************
+* MonAm 25 year anniversary *
+* beta 3.09                 *
+*****************************
+
+
+
+
+
+MonAm 3.09 should run on 020+
+
+This MonAm works as 3.08, but has some stuff added.
+- The instruction set for the decoder has been expanded.
+  Skip_instruction/breakpoint_after work with the new instructions.
+  Also trace.
+- The windows can be sized with <cntl> arrow.
+- Extended register type added (080 only of course)
+  The default for win1 when a 080 is found.
+- CopR disassembly type added.
+- command 'O'ther_bases expanded with more bases.
+- command 'R'un expanded with C, E, R, O & P
+- command 'T'ransfer added. (080 only)
+- command <a>'R'egister expanded to include the new registers. (080 only)
+- command <a>'C'hange extended register layout. (080 only)
+- command <a>'H'ighLight.
+- command <a> s'Y'mbolic.
+- command <a>'M'emory shows 0-$8000 $DFExxx
+- command <a>'O'ffset assistance.
+- command <cntl>'T'imed routine. (080 only)
+
+The changes to make this 3.09 so far are completly written on v4sa+ using 
+core7.4 & os7.4. The evolving debugger itself was used to debug its own bugs.
+vasm is used to assemble, jano-editor to modify code. 
+
+
+ctrl-Z/Y called 'Single Step' use the TRACE BIT, multiple instructions seem
+sometimes to be executed because the 080 uses instruction combining.
+ctrl-T called 'Trace Instruction' does NOT Trace.
+It is a interpreter of instructions by monam itself it sets a breakpoint
+after that, so b/jsr is completly taken. This also works with the new
+instructions. (page 173)
+note: NOP does not trace on 080
+
+
+-------
+
+Index:
+
+1   Commands changed/new
+2    Extended register window type
+3    CopR disassembly window type
+4    Added to preferences
+5    Editing the MonAm.prefs file
+6    Floats
+7    Extended libfile
+8    Timed routine
+9    Highlighting
+10   OS usage
+11   New to the instruction decoder
+12  Links
+13   Reserved symbols list
+14  FAQ
+15   know bugs
+16   Reporting bugs
+17   update reports
+
+
+-------
+
+1 Commands changed/new:
+
+'O'ther bases
+  Now shows hex, dec, binair, octal
+  and checks symbols, custom, vector, LVOlibs, libs
+
+'R'un
+  Run_various is a very slow instruction by instruction analise tool.
+  Every step is logged in the historic buffer.
+  Run has now Go, Instruction, Change, Equal, Rts, Opcode & Pc
+ Change monitors a b/w/l memory value. It stops when that changes or when
+  the (optional) maximum steps are taken.
+ Equal also monitors a b/w/l memory value. It stops when that equals a
+  user value or when the (optional) maximum steps are taken.
+ Rts stops before a rts/rte/rtd. No optional steps here.
+ Opcode stops before an opcode 'value' it can be masked and have maximum
+  steps. So 4e75,fff0,100 stops before any instruction that start with 4e7x.
+  If that does not happen, it stops after 256 steps (=$100)
+  This would stop before: reset/nop/stop/ret/rtd/rts/trapv/rtr/rpc/movec.
+ Pc stops when the pc is within the range address1 <= pc <= address2.
+  or if the optional maximum steps are taken.
+
+<cntl>W identical to cntl-Z but included for the convenience of french users.
+
+<cntl>arrows changes the size of the windows.
+ win1 cntl-up/down, others also cntl-left/right.
+
+<cntl>T'imed routine, counts cycles used to run a routine.
+ The presented value is (micro) seconds followed by Cpu_Clock_Cycles.
+
+'T'ransfer.
+ 64 bit register transfer. possible: d0..7 a0..7 b0..7 e0..23 fp0..7
+ Using '_' before the source swaps the hi-low parts.
+ Using '+' before the source copies the low to hi-low parts
+ Example: fp0=_e15 puts the content of e15 in fp0 after being swapped.
+ Or a value. fp3=123456789abcdef
+ (Transfer does no calculations)
+
+<a>'H'ighLighting on/off.
+ White text highlight change.
+
+<a> s'Y'mbolic presentation hardware on/off.
+ Custom/saga registers (monam.regfile) cpu vectors (monam.vecfile)
+
+<a>'M'emory Range on/off. Range 0-$8000 and for 080 $DFExxx also.
+ $DFF220-8 reads as valid memorie, so the most powerful breakpoint
+ type '?' (page 167) can use joypad-buttons.
+   'label,?{dff220}.w<>0' as breakpoint would test if the joypad is
+   connected. If not, it does not stop at that breakpoint.
+ Setting is saved in preferences-file.
+
+<a>'O'ffset assistance on/off. Memory type window can switch addr to offset.
+ Stacked windows all share the same offset. Zoom mode also includes offset.
+ o1..5 are the offsets for the 5 windows. 
+
+<a>'R'egister set  (page 165)
+ Now also includes e0..23 , b0..7 , o1..5 , fpcc & vbr
+ The (long) result can be put in fp0..7
+ A rom constant can be placed in fp0..7
+   example: 'fp6=r35'  (constant $35 = 10^4 = 10.000)
+ vbr looks like it can be set.
+ You see the vector-symbols change and calculation works with it.
+ But vbr is actually not set. Use 'Esc' to view the real value again.
+ . See reserved symbols list @13
+
+<a>'C'hange extended register setup.
+ possible:
+ da Data+Addr
+ fb Float+B-addr
+ e3 3 coloms of 8 rows
+ e3f same as e3 but only in float 9decimals.
+ f6/9/12 float with 6/9/12 fraction decimals.
+ e6/9/12 same for extra registers.
+ a  Addr
+ b  B-addr
+ c  Control registers
+ c0/1/2/3/4/6/8 same for that cpu.
+ ca all
+ d  Data
+ e  Extra
+ es Extra small, only 8 of the posible 24 are shown.
+ f  same as f12.
+ ff full float 9decimals only , fpu + 3x e
+ m  Monam-addr see page 153
+ m0 m0_float: addr looked at as single, double & extended
+ pc status of integer unit and float unit, progam counter and next
+    instruction.
+ pc2 status+stackpointer & pc+next instruction
+ pc3 status_fp & pc2
+ pc4 pc2 & status_fp+m0_float
+ pcf pc & m0
+ space between entries, double space to indicate a bottom-part.
+ *More complex can be done by editing 'monam.prefs'
+  See 'register_blocks.txt'
+
+
+-------
+
+2 Extended register window type:
+
+Has the full 080 register-layout.
+It is different from the normal register mode because it can be scrolled.
+Except for the bottom part that does not scroll.
+The bottom part has priority over the top part.
+The scroll position is remembered in multiple views.
+Monam can do a simple change of the layout with '<amiga> C'
+More complex can be done by editing the prefs file.
+This type can be used in window 1, 4 & 5.
+
+Default shows:
+Top part:
+ Data registers followed by Address registers      [ da ]
+ usual view, exept for 64bit.
+  (if screen if high enough followed by)
+ Extend registers 3 coloms of 8 rows.              [ e3 ]
+ Float registers followed by B-address registers.  [ fb ]
+Bottom part:
+ Progam Counter & status flags , next instruction  [ pc ]
+
+
+bottomline of the new register window:  [ pc ]
+ TUI.XNZVC NZI! pc:01245678 movea.l label(pc),a5  ;01260000 abcd abcd
+ \       /\   / \         / \                  /   \      /\        /
+ integer  float    addr       next instruction       addr    value
+      status      program                            label    at
+                  counter                                    label
+
+  Integer status:
+   T   - seen as a single step was made with 'Trace' in left-bottom.
+   U/S - cpu in User or Super visor mode.
+   I/M - Master / Interupt mode.
+   ./A - Ammx aware on ac68080
+     user status:
+   eXtend Negative Zero oVerflow Carry
+
+  Float status:   (blue ink)
+   Negative Zero Infinity !=Not-a-number
+
+
+-------
+
+3 CopR disassembly window type:
+
+Selected by <a>'T'ype on win 4 & 5 when address < $dfe000. It acts like the
+normal disassembly, but with the very limited copro instructionset.
+<a>'E'dit cycles 320/640/1280 decimal mode, default 320.
+The copper-move is dest,data & 68k is data,dest. The format tries to assist
+both. Long moves uses symbols for address when found.
+ move.l $084,#clist  Cop2Lc
+ wait   $1448($7ffe) 20,144 &blit
+Wait & skip display the pixels position in decimal.
+An ascii can be place in front of the copper instruction. See editing the
+MonAm.prefs file. So skip can be viewed as cskip.
+
+
+-------
+
+4 Added to preferences:
+
+- screen switch, keep off, buggy
+  Yes keeps track of screen switching, interupts, vectors
+- bank decoder                  conform vasm = yes
+  No: bank seen as seperate instruction.
+- bank indicator                conform vasm = no
+  Yes puts a '~' before a banked instruction.
+- ammx hide operand             conform vasm = no  (b=c)? (vea),b [,c]
+  Yes: when the second and thirth are the same the last is not shown.
+- ammx size                     conform vasm = yes
+  Yes: .w or .l 
+  No: divides the 16 characters (from a quad) up in 2x8.
+- Avoid exponent in float
+  Yes presents float as non-exponent when possible.
+- Decimal numbers between Data-Addr
+  Yes shows decimal numbers after Data registers when there is room enough.
+- Use file requester, default Yes.
+
+
+-------
+
+5 Editing the MonAm.prefs file:
+
+Position 88 ($58) has 3 ascii characters:   <>!
+- Two brackeds used to indicated an indirect dataregister from storei/loadi,
+  these are any ascii or zero(off)
+- One character used to indicate the FPU status "Not-A-Number".
+Position 100 ($64) between '[' & ']' is the layout of the 080 register
+window. A maximum of 30 blocks can be saved. see 'register_blocks.txt'
+The blue inked float_status can be changed at position 206 ($ce)
+using the normal os colors. 0=grey 1=black 2=white 3=blue.
+Position 207 ($cf) char that is placed before a copr instruction or zero(off)
+Also see prefs_file.txt & register_blocks.txt
+
+
+-------
+
+6 Floats:
+
+There are 3 default sizes for float presentation. 6,9 & 12 fraction decimals.
+called f6 f9 f12 and e6 e9 e12. (<amiga> Change)
+The automatic rounding for the 12 fraction precision is not optimal.
+A preference can be set to avoid the usual mantissa-exponent view
+for a more easy to grasp view.
+It has a 3 step range and can show the following 
+- below zero values.
+- integer values (incl zero)
+- milions with posible 6 fraction.
+- bilions and billions. (shifted 6 positions)
+ Only available in 9 fraction mode. (range: e14..e9/e8..e0/e-1..e-11)
+ The disadvantage here is that when the full calculated rounded 10 numbers
+ can not be displayed, it cuts off the remaining part without rounding again.
+
+The 080 float is a double internal. 56bits are used for calculation.
+The 68881/2 units are 80 bit, 4 nibbles exponent + 16 nibbles fraction.
+The 68080 unit uses 3 nibbles exponent + 11 nibbles fraction.
+exponent range -308..308.
+ Double = EEE MMMMMMMMMMM00   10^ -308..308 , 13 decimals precision
+ Single = EE MMMMMM           10^  -38..38  ,  6 decimals precision
+
+*monam bug: near zero numbers on the -e308 edge can be represented as
+            smaller numbers
+
+
+-------
+
+7 Extended libfile:
+
+ Support file for the debugger enabling the automatic naming and 
+ display of many operating system library calls. (page 157)
+
+Monam now supports a new libfile format that is backward compatible.
+Old monam ignores the new entries when it loads the new libfile.
+New monam still accepts the old libfile.
+
+A disadvantage is that all included libs needs to be opened and closed
+to get the base_pointer.
+If that is unwanted, use the old libfile.
+
+It shows up on the instruction where the program_counter(>) points to,
+"jsr -$0228(a6)" is shown as "jsr _LVOOpenLibrary(A6)" when the address
+is a known library address. The real jump address is tested, 
+not just the offset.
+
+The included libs can always be seen with a hexeditor at the end of the
+libfile or look at libfile_index.txt.
+
+Regfile:
+
+Monam now supports a regfile format. Similair to the libfile but for
+fixed register addresses in the $BFD..$DFF range. It contains the names
+used for the symbolic representation of the custom hardware registers.
+"$DFF00A" is shown as "Joy0Dat" 
+"$A(a3)" also shows that if a3=$DFF000
+
+Vecfile:
+
+Identical to regfile format, but contains the cpu vectors relative to
+the vbr offset. Range vbr..vbr+$400.
+
+So Monam handles:
+- program related symbols.
+- jumptable symbols.
+- custom hardware symbols. <amiga> sYmbol to switch on/off.
+- vector table symbols.    <amiga> sYmbol to switch on/off.
+
+
+-------
+
+8 Timed routine:
+
+Counts cycles used to run a routine.
+All bsr are converted to jsr_absolute and copied to a timed setup.
+ jsr pc-relative is also converted to abs.l
+ jsr register-relative are kept that way.
+
+   movec   ccc,a5           <- ccc_start
+   movem.l a5,ccc_start
+   movea.l restore_a5(pc),a5
+   jsr     your_routine
+   movem.l a4,-(sp)
+   movec   ccc,a4           <- ccc_end
+
+The presented value is ccc_end - ccc_start. Also seen in (micro) seconds.
+up to 4 billion cycles (51sec for a 12x core)
+Be aware that taken interupts during that, add a lot of cycles.
+minimum multiplier(1) takes 600sec to loop, maximum($ff) takes 2.5 sec.
+
+
+-------
+
+9 Highlighting:
+
+Changes can be spotted very easy as the text-color will change from black
+to white. Highlighting is done on
+- Historic buffer: Dn & An register changes.
+- Extended register-type
+   An & Bn & FPn on change.
+   Dn & En depending on byte/word/long/quad change.
+- Limited memory range.
+  address pointers An & Bn checks a range from -60byte below to +120byte
+  above for change.
+  M0..5 also but gets a bigger range when the window is memory-type.
+  Then it checks the full page & a page above & below.
+<amiga>'H'ighLight on/off, saved in prefs file.
+Historic buffer is always Highlighted.
+Note that switching highlight off before an execute command prevents the
+highlight_buffer to update. This can be usefull.
+Note that M0, the calculated ea destination, is listed. So a write to ea
+is always in the highlight buffer.
+
+
+
+-------
+
+10 OS usage:
+
+MonAm is still developed on os7.4 because it has the least drawbacks.
+Compared OS7.2 OS9.2 cafeine_dec22 & coffine61 in december 2022.
+Running MonAm coffinv61 is advised because:
+- text is smaller, so much more information can be displayed.
+- the text build_up is much faster than the others for a full screen.
+
+
+-------
+
+11 New to the instruction decoder:
+
+ammx      using (vea),b,c:
+ vperm
+ trans(hi/low)
+ minterm
+ tex
+ p(e)or/and(n)
+ pavgb
+ pabs b/w
+ padd(us) b/w
+ psub(us) b/w
+ pmul 88/a/h/l
+ bfly
+ unpack1632
+ c2p
+ bsel
+ pcmpcc
+ pmin/max
+ ls(l/r)q
+ammx      using b,c,(vea):
+ store(i/c/m/m3/ilm)
+ packuswb
+ pack3216
+
+movec includes 080 registers
+movea.l (ea),bn
+move.l bn,(ea)
+perm
+addiw.l
+rpc
+lea (ea),bn
+lea (bn),an
+add/subq.l bn
+cmp.l bn,dn
+dbra.l
+bra/bcc/bsr.b
+touch full extension format 
+moves_ext using ea_plus:
+  abs,min,max,(e)or,and(n),add,sub,cmp,move(x/2)
+
+Bank: 
+.bank a,b,eor c
+(seen if following instruction has no bank_decoder yet
+or if bank decoder is switched off. (preferences) )
+
+float banked, 3op , extended float & data-registers
+
+banked extended data-registers on op_1 & 2
+move b/w/l, moveq, add(i), sub(i), (e)or(i), and(i), clr, not, neg, tst, 
+ext, exg, cmp
+
+
+------
+
+ammx_immediate 
+q = #$12345678 12345678
+w = #$1234
+w (lsd) = 1..64 decimal
+
+
+-------
+
+12 Links:
+
+080 Debugger - MonAm 3.09b - Anniversary:
+apollo-core.com/knowledge.php?b=4&note=38608
+
+Developer Documentation:
+apollo-core.com/knowledge.php?b=5&note=38530
+
+Vasm, 080 assembler:
+sun.hasenbraten.de/vasm/bin/cur/vasmm68k_mot_os3.lha
+
+archive.org/details/DevPac_v3.00.Manual (pdf can be downloaded)
+page 139..186 MonAm
+page 159 commands explaned
+page 180 command summary
+
+-------
+
+13 Reserved symbols list:
+
+Always case insensitive.
+a0..7    cpu Address register
+b0..7    cpu Address register 68080
+d0..7    cpu Data register
+e0..23   cpu/fpu Data register 68080
+fp0..7   fpu Data register
+fpcc     fpu condition code
+hunk0..? program segment
+m0..9    monam register
+pc       cpu program counter
+(s)sp    cpu (super) stack pointer
+sr       cpu status register
+vbr      cpu vector base register
+
+
+-------
+
+14 FAQ:
+
+Q: what is MonAm?
+A: Monitor Amiga. A symbolic debugger, disassembler and memorie viewer
+   that can single step programs and use breakpoints. It shows processor
+   exceptions caused by programmer errors. see page 139.
+
+Q: How does it work? / What does it do?
+A: DevPac_v3.00 Manual page 139..186
+
+Q: What files need to be present to let MonAm work?
+A: None, but:
+   Debug (+ .info) makes Monam launchable from wb.
+   MonAm.prefs holds saved preferences.
+   MonAm.libfile presents a known lib like 
+      jsr -$0228(a6) as jsr _LVOOpenLibrary(a6)
+      and the libname as the base pointer.
+   MonAm.regfile presents hardware like
+      move.w $DFF00C,d0 as move.w Joy1Dat,d0
+   MonAm.vecfile presents vectors like
+      move.w $006C(a0),d0 as move.w Av3_Vbl(a0),d0
+
+Q: MonAm crashes right after the start.
+A: Run 'Debug' from wb  or  Run 'MonAm' from cli.
+
+Q: Why change perfectly good 3.08?
+A: Kamilito & Tommo liked having Monam being able to disassemble 080-code
+   correctly.
+
+Q: Where can i find more info about that 080 you mention?
+A: Forum: Developer Documentation.
+   http://apollo-core.com/knowledge.php?b=5&note=38530
+
+Q: Why are there no labels?
+A: MonAm is pre-kick2hunks, so add '-kick1hunks' to your vasm assembly
+   command to get those lovely labels.
+
+Q: Single step does not work.
+A: The ac68080 unit needs a core with 'trace' enabled.
+   ctrl-Z/Y called 'Single Step' use the TRACE BIT.
+   ctrl-T called 'Trace Instruction' does NOT use the TRACE BIT.
+
+Q: So why is it called 'Trace Instruction' then?
+A: page 173
+
+Q: Why JanoEditor?
+A: Line numbers are always visable (for vasm error location)
+   Multiple tabs, Excelent undo/redo,  Search, Copy/Paste 
+   Has key command for save file ( <amiga>W )
+   Any editor is fine, including the original devpac-editor.
+
+Q: What command is used to assemble with VASM?
+A: vasmm68k_mot -Fhunkexe -kick1hunks -m68080 -o ram:yourfile yoursource.s
+   see text file 'a' & vasm.pdf
+
+Q: Found a bug!
+A: Read "Reporting bugs:" some lines below FAQ.
+
+Q: When i do <amiga>R 'fp0=12345' i see fp0 = 74565. That is a bug!
+A: hexidecimal 12345 = decimal 74565. Use 'fp0=\12345'  see page 151.
+
+Q: Why is the rounding for 12 fraction float not accurate?
+A: MonAm's float decoding uses the float-unit itself to decode to decimal.
+   But the 12 fraction rounding is on the edge of its precision.
+
+Q: Can i have the source?
+A: you already have, just load MonAm into MonAm and you see where we
+   started with. A disassembled program, but with the advantage that the
+   new added stuff often has labels that make sence.
+
+Q: How come the e-registers are cleared in apollo-os and not in coffin?
+A: Monam presents the registers as the os would present them to your
+   program. Apollo-os is aware of the apollo-registers and clears most.
+
+Q: Is there going to be a "Monam tips" like "AMMX snippets" ?
+A: Watch the forum.
+
+Q: Can i go back to MonAm after clicking on something in view_other_screen?
+A: Yes, <left_amiga>M 
+   When the mouse-pointer is not MonAms bug-pointer, keyinput is not going
+   to MonAm anymore. Flip with <left_amiga>M to MonAm and do a mouse-click
+   on the window.
+   <left_amiga>M is part of the OS, it has nothing to do with MonAm.
+
+Q: How can a source_text be loaded?
+A: 'A'scii in win1, 3, 4 and 5.
+
+Q: Can the source_text also be locked to pc?
+A: use -linedebug option to include references in de code when assembling,
+   then it can.
+   preferences: auto_load_source_file will use win4 for this.
+
+Q: I have loaded a source file, but i can not lock or set the address.
+A: MonAm uses internal the -linedebug info for that.
+   Is must be included in the program file to do that.
+
+Q: I see highlighted change in window3, can i see what it was before?
+A: Yes, but not easy.
+   That buffer is after the extended_register buffer. M7 default points
+   there. Use search memory (Get a sequence) to search for an unchanged
+   value present in window3. Then see if the other unchanged match.
+   (see doc/M7_register.txt)
+
+
+-------
+
+15 know bugs:
+- 'esc'-update: when shorter than 10 height, win1=registers line 10 messes
+  up things.
+- Devpac has trouble with getting special settings on first go.
+- Float is not decimal decoded (missing (software) decimal real decoder)
+- 080 float register only shows 4+8 nibbles. (because the 080 fmove.x is 
+  different) The 080 float is a double internal, not 80bit.
+- Prefs win is to big for ntsc high.
+- Apollo-shield might not like monam snooping around.
+- tex format is not conform vasm.
+- ea new registers values displayed after the current pc instruction are wrong
+
+
+-------
+
+16 Reporting bugs:
+
+where?
+-discord apollo developer channel
+how?
+-provide detail description.
+ example:
+ add e3,e5 is not one instruction.
+ expected instruction: add e3,e5
+ seen in monam: .bank 1,1  add.w d3,d5 / opcode= $7105 $da43
+ previous instruction: ext.w d3 / opcode= $4883
+make sure it is not already reported.
+test if it is accepted by vasm.
+
+
+          - - * * * - -
+- Happy coding, Kamelito & Tommo -
+
+
+
+****************************************************************************
+17
+
+jul update:
+
+-Fixed a bug where the ram was not completly freed again after exit. Now
+ conform 3.08.
+-Added cntl-W identical to cntl-Z but included for the convenience of french 
+ users.
+-Fixed a bug from 3.08 where move to lable(pc) was not correct.
+-New preferences can be set & saved. compatible with future and previous 
+ monam 3.08 versions.
+-New prefs file does not break monam 3.08.
+-When AMMX_size is off the #imm quad is split for readablity. (prev was 
+ always split)
+-Register window: float register are now under data-registers. (conform 
+ atari mon)
+-Sizeable windows: so moving the float registers below make more sence,
+ because the FPU is a prominent feature of the 080.
+-Sizeing: simple cross mode: win1 cntl-up/down, others also cntl-left/right.
+-Condition status is <A>mmx aware. (after M/I the A/.)
+-Float condition status present like integer unit. ( <N>egative, <Z>ero, 
+ <I>nfinity, <!>nan)
+-ascii to signal 'nan' can be changed in prefs file, like storei brackets. 
+ (must be valid) as default '!' is used.
+-ssp added. (So shoggoth can convince more atari guys to abandom there
+ hardware and buy a v4sa. 
+ Also the looks is a bit more atari.)
+
+Symbol stripped beta size is now 44760, 5324byte bigger than 3.08
+
+
+          - - * * * - -
+- Happy coding, Kamelito & Tommo -
+
+
+****************************************************************************
+
+aug update:
+
+- Fixed bug when win1 had 24 or more lines it could not restart after save
+  prefs.
+- Fixed bug in 3.08 where a character would be lost when viewing memorie
+  window.
+- on 3-08(date) the first e-register trace was done and showed up in the
+  new extended register window.
+- Extended register type added (080 only of course) for win1 & 4.
+  The default for win1 when a 080 is found.
+- Self adjustment. Optimised for screenwidth 720 & 960.
+- win 1: double tap <amiga>-'T'ype switches 32 <-> 64 bit view.
+  or make another view '>' so you can switch with one keypress using
+  ',' or '.'
+- Extend register type has a top part and priority bottom part.
+  Both parts can be altered. (<amiga>C)
+- Top part is scrollable with (shift) arrow up/down.
+  This offset is remembered in the (multiple) view modes.
+- Sizeable win more independent, height of second row can be altered.
+- Extended registers default value is what program would get from the OS.
+- Register M7 defaults to extended_register state, for easy edit.
+   entry layout: 8*64bit. entries: Data, Addr, B_addr, E0, e8, e16, Float
+   The old_part will NOT change, there is a very good 'Register=' for that.
+- included dbcc.l for possible billions counting.
+- changed 'dbf' to the unofficial 'dbra'.
+- Fixed bug where the default startup width of win3 was always small.
+- decimal float values.
+   The current fpu(core7.4) uses 3 exponent nibles and 11 fraction nibles.
+   roughly
+   exponent Range 2x10e(+/-)308
+   fraction accurate 1.000.000.000.000
+- fixed bug with float where same register different bank was wrong.
+  'fmove fp0,e0' was decoded as 'fmove fp0'
+- <amiga> R (Register Set) includes 080 registers. (32bit)
+  fpn can be destination.
+- 'T'ransfer added for 64 bit.
+- space between 3 e_blocks gets bigger when it can.
+- move2 now shows the double operand.
+- fixed a redbug where a test was bogus,
+  that messed up the new_reg sync with the old_reg.
+- run from os 3.2.1 has a smaller font, so can display more characters.
+- fixed bug where new registers could not be calculated with
+  but only be destination or source in <amiga>R routine.
+- fixed bug in transfer where m/sp/sr where tested.
+- fixed bug in transfer when no 080 is present it still would do stuff.
+- <amiga> 'C'hangeable ext window type added.
+- made saveable in prefs file.
+- fp0..7 added as destination in simple calc (<amiga>'R')
+- added avoid_float in preferences.
+- a b d added for 'C'hange.
+- addr register: its memorie content view works better now.
+- <amiga> 'E'dit works on extended registers window type.
+- OS bug in editor where the cursor acted like the game tron
+  rudly fixed by redraw of content window after movement of cursor.
+  activate it in preferences by: "Seen black lines in EDIT ?" Yes
+  Can be switched off, because "black lines matter" ;)
+- fixed a redbug where the float status was not restored after using float
+  instructions in monam itself. So the program got bogus fpu_status.
+- fixed bug where showing extended register window showed as a locked
+  expression.
+- fixed bug where viewing extended registers (win 1 or 4) mode broke lock
+  mode.
+- window can also be locked on b0..7 e0..23.
+- <amiga>'C'hange remembers user input, it is shown at the lock position.
+- Data integer: hex, text, decimal: +-byte,+-word,long,quad added.
+- Added disassembly & extended register to the previous memory-only window-5.
+
+
+          - - * * * - -
+- Happy coding, Kamelito & Tommo -
+
+
+****************************************************************************
+
+okt update:
+
+- added dbra.l
+- Fixed bug in perm where second operand was bogus.
+- Fixed bug where fmove float to integer was not correctly banked.
+- Fixed window sizing bug when window 5 was not memorie type
+  and window 3 was not present left/right did not work correct.
+- added cmpiw.l
+- added Data_decimal after Float_decimal for e-registers.
+- added Data_decimal between da (Data & Addr) if there is enough room.
+  can be switched off in preferences.
+- bfly now shows double destination. (like unpack & trans)
+
+
+                         - - * * * - -
+- Kamelito & Tommo wish you a good experience with this ApolloOS  -
+
+
+****************************************************************************
+
+nov update:
+
+- Fixed bug reading a variable after coming back from the
+  debug-program. but the variable_list_pointer was not yet set.
+  That resulted in the 080-register-parts not being updated sometimes.
+- Fixed tron-bug/blacklines drawmode in apolloOS. (edit, preferences)
+- pc3 pc2 added for 'C'hange.
+- Fixed incorrect displaying of tracemode.
+  4 places where used to display t1 & t0 bit.'T0' was displayed on t1 set.
+  As Monam only uses on_any_instruction, a single 'T' shows that now.
+- new added screenswitch is buggy, pref:screen_switch=N is safe. (default)
+
+- fixed empty line showing up after pc pc2 pc3
+- fixed 3.08 bug when editing memorie using the tab to switch from
+  hex->char. It broke after the 8 word colom.
+  (pal-hi in zoom mode & bigger screens)
+- fixed 3.08 bug in edit mode.
+  char->hex position return in odd addr mode was wrong.
+- added rom constant to <amiga>'R' for fp0..7 destination.
+- fixed bug where resizing win1 would add a line in many resolutions
+  to the lower windows. (got a monitor that can show more than just
+  720x576 so i noticed it now...) all modes tested correct now.
+- fixed bug where in 1024x768 window4 bottomline would be overwriten by 
+  the return_reason (text bottom_left corner)
+- added extended libfile support.
+- asl lib added to libfile
+- added file_request support, optional. clearified names.
+- 'clr.l an' was not implemented, it showed as 'clr.l ??'
+- added resource support in libfile.
+- 14 libraries + 7 resource added (303 new jsr entries)
+
+
+          - - * * * - -
+- Happy coding, Kamelito & Tommo -
+
+
+****************************************************************************
+
+dec update:
+
+- fixed double cancel for load 'B'inairy in filerequest-mode
+- added custom hardware registers symbolic support: monam.regfile
+  BF & DFF, 444 entries (DFF also used for DFE)
+  <amiga> s'Y'mbol on/off
+- added vector symbolic support: monam.vecfile, 46 entries
+- 'vbr' is now seen by <amiga>R
+- jsr/bsr routines can be timed - <cntl>'T'imed
+- added trap# and lineA to be timed.
+- conform mon-atari control registers are now also seen when no program
+  is loaded.
+- <amiga>'M'emory hide/shows 0-$8000
+  also $DFExxx (080 only) so you can see what the last hardware write was
+
+
+          - - * * * - -
+- Happy coding, Kamelito & Tommo -
+
+
+****************************************************************************
+
+jan update:
+
+- Highlighting added for visual ease. Monam now uses 2 planes to do that.
+  <amiga>'H'ighLight on/off
+- Historic buffer highlights Dn & An register changes.
+- Extended register support highlighting for:
+  . An & Bn & FPn on change.
+  . Dn & En depending on byte/word/long/quad change.
+- limited memorie highlighting.
+  all address pointers An & Bn checks -60 to +120bytes for change.
+  m0..5 also but gets a bigger range when the window is memory-type.
+  Then it checks the full page + 1 page forward and 1 page back.
+- pc_line now shows fpu-status in blue. (after black integer-status)
+- Edit mode typing directly checks highlighted (in byte and char mode)
+- Control registers display now includes 080.
+- added control registers to extended window.
+- c added for 'C'hange
+- c0 c1 c2 c3 c4 c6 c8 ca added for more 'C'hange
+- added str stc sth stb to movec disassembler.
+- renamed mip1 (&2) to iep1 (&2) conform vasm. 
+- added Offset_assistance to memory_type window for ease.
+  <amiga>'O'ffset toggles on/off.
+- added o1..5 to the simple calculator. These are the window offsets.
+
+- fixed cursor_position 'Binairy_load' after a file_request to be after
+  the filename. So an optional address can directly go after that.
+- added 'Run until address Changes (memory value). b/w/l and optional
+   maximum steps.
+- added 'Run until address Equal (memory value) to value. b/w/l and optional
+  maximum steps.
+- added 'Run until Rts' this includes rte & rtd.
+- added 'Run until Opcode' with optional mask & optional maximum steps.
+- added 'Run until address1 <= Pc <= address2' with optional maximum steps.
+- changed 'Run Go' to a slow one that logs in the historic buffer.
+- added Copper disassembly type for win 4 & 5.
+- <a>'C'hange shows options list. Changed f to respond as f12, not fb.
+- added 'fpcc' as the only byte sized entry to the 32bit expression
+  evaluator. So fpu-conditions can now be set with <amiga> R (Register Set)
+
+- fixed bug where redraw on zoomed window went wrong for <a>m & <a>y
+- added 'e3f' & 'ff' to 'C'hange for the float freaks.
+- fixed incorrect naming dcm as dch
+- added mwr to movec disassembler.
+- added 'C'hange to zoomed extended_register type window.
+- added (c)nop(.l) & jmp1(/2).l to copper_disassembly to support
+  copper_list modification.
+- added $1fe as 'NoOp' to monam.regfile
+- created doc/create_monam_libfile_tool
+- added doc/CommandSummary309.pdf
+- added doc/CommandSummary309Card.jpg
+
+Symbol stripped beta size is now 57436, 18036byte bigger than 3.08
+This text just explaining the change is 30829byte.
+
+
+          - - * * * - -
+- Happy coding, Kamelito & Tommo -
+
+
+****************************************************************************
+
+feb update:
+
+- added octal and binair to 'O'ther bases
+- 'O'ther bases now always checks for custom_register_names & vector_names
+- added 'Vector_Base' to monam.vecfile
+- 'O'ther bases now also shows _LVOlibs.
+- <cntl>'T'imed now shows correct 'micro' symbol (ascii 181)
+- when file_request closes, monam request to be in front again.
+  done for vampires that use a coffin.
+- fixed visual bug where Snd__Vol & Snd__Cnt ($dff4xx) pointed 2 byte to low.
+  in monam.regfile.
+- changed 'Registers' to 'Custom_Base' in monam.regfile
+- fixed 'Disassemble to Disk' that got broken in first 3.09 release
+  no idea if printing works, i can not test that. (page 178)
+  conform vasm these switches are forced:
+    Bank_decoder=Y Bank_indicator=N AMMX_size=Y AMMX_3_op 
+- fixed unknown ammx instruction that failed to show 'dc.w' before value
+- added lib_bases (from monam.libfile), acts like custom & vector.
+  table can be found at {m7-10} for quick search for a lib addr.
+- 'O'ther bases now checks symbols, custom, vector, LVOlibs, libbases
+- cleared the joypad readout ($dff220) as valid memorie.
+  so that it can be used with the most powerful breakpoint type '?'
+  'r0002026,?{dff220}.w<>0' as breakpoint would test if the joypad is
+  connected. If not, it does not stop at that breakpoint. (page 167)
+- added bra/bcc/bsr.b
+- removed extended-register-win-type from being search able.
+- fixed search memory 'I'nstruction that got broken in first beta
+- extended-reg blocked from search identical to register type win
+- fixed search 'I'nstruction bug in 3.08 where the rest was skipped
+  after 1 character matched and the rest did not.
+
+
+          - - * * * - -
+- Happy coding, Kamelito & Tommo -
+
+
+****************************************************************************
+
+mrt update:
+
+- disassemble to disk now removes the loadi/stori hooks '<>' conform vasm
+- search 'I'nstruction bugfix did not comply on case insensitive.
+- ea line after pc:
+  - vea for new 080 instructions now shows valid address & memory value
+    in the correct size. And -(An) & -(Bn) quad now shows correct.
+  - lea ea,Bn shows now ea at pc-line
+  - float ea now shows valid address & memory value for b,w,l,s,d,x,p
+    including correct -(An).
+  - float ea now shows a value for b,w,l,s,d,x
+- added pc4 & pcf & m0 to 'C'hange for ea: float m0 = s,d,x preview 
+
+
+                         - - * * * - -
+- Kamelito & Tommo wish you a good experience with this ApolloOS  -

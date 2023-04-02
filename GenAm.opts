@@ -1,0 +1,6 @@
+incdir /Include,/Src,/Examples
+-vp=68040/68881
+-vow-,o+,ow6+
+chkimm
+debug
+line

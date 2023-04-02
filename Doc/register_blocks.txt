@@ -1,0 +1,130 @@
+MonAm 3.09
+Configurable blocks of the new register type (080 only)
+-------------------------------------------------------
+
+
+Simple Change
+-------------
+
+<amiga>C hange when using Monam.
+ possible:
+ da Data+Addr
+ fb Float+B-addr
+ e3 3 coloms of 8 rows
+ e3f same as e3 but only in float 9 decimals.
+ f6/9/12 float with 6/9/12 fraction decimals.
+ e6/9/12 same for extra registers.
+ a  Addr
+ b  B-addr
+ c  Control registers (not yet)
+ d  Data
+ e  Extra
+ es Extra small, only 8 of the posible 24 are shown.
+ f  same as f12.
+ ff full float, 4 coloms of 8 rows fp & e in 9 decimals.
+ m  Monam-addr see page 153
+ m0 m0 float: addr looked at as single, double & extended
+ pc status of integer unit and float unit, progam counter and next
+    instruction.
+ pc2 status+stack pointer & pc+next instruction
+ pc3 status fp & pc2
+ pc4 pc2 & status fp+m0 float
+ space between entries, double space to indicate a bottom-part.
+
+
+
+Complex Change
+--------------
+
+The monam pref file can hold 30 blocks that define the 080-register window
+layout. It starts at byte 100 with '[' and ends with ']' and contains 98bytes.
+
+Between that is the structure:
+
+-top entries:  entrie (3bytes), entrie (3bytes), .. 
+-0(1byte) to indicate end_top_list
+-bottom entries:  entrie (3bytes), .. 
+-0(1byte) to indicate end
+
+The entries do not have to be there, the 2 end indicators do.
+
+An entrie (block) contains 3 bytes:
+1/ Number of lines. may not be zero. (msb signals place empty line before)
+2/ Start line
+3/ Routine
+
+There is no check if it is correct, just intended for the expert that wants
+a more complex presentation.
+
+
+current asignment:
+------------------
+
+routine_0 intended routine for the bottomline.
+curently only holds 1 line:
+status integer unit, status float unit, program counter with next instruction.
+
+routine_1
+Data & Addr, 8 lines
+
+routine_2
+Float & B-addr, 8 lines
+
+routine_3
+3 E-registers , 8 lines , 3 coloms
+
+routine_6
+E-reg as data & 6decimal float , 24 lines
+
+routine_7
+Float 6decimal , 8 lines
+
+routine_8
+E-reg as data & 9decimal float , 24 lines
+
+routine_9
+Float 9decimal , 8 lines
+
+routine_a
+Addr , 8 lines
+
+routine_b
+B-addr , 8 lines
+
+routine_c
+control registers
+
+routine_d
+Data , 8 lines
+
+routine_e
+E-reg as data & 12decimal float , 24 lines
+
+routine_f
+Float 12decimal , 8 lines
+
+routine_11
+M-addr , 8 lines
+
+routine_13
+3 E-registers as float 9decimals , 8 lines , 3 coloms
+
+routine_14
+Float &  3 E-registers as float 9decimals , 8 lines , 4 coloms
+
+routine_0
+All pc related routines, 7 lines
+0 cc+fpcc+pc
+1 fpsr
+2 sr+sp
+3 pc
+4 fpsr+m0
+5 cc+fpcc+pc
+6 m0
+
+Block examples:
+---------------
+
+$18 00 0e = 24,0,14  24 lines( no empty line), start with 0, E-reg with 12 decimal
+$86 02 11 =134,2,17   6 lines(add emtpy line), start with 2, M-reg
+$01 00 00 =  1,0, 0   1 line ( no empty line), start with 0, PC

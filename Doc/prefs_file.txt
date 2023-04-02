@@ -1,0 +1,77 @@
+MonAm.prefs is a direct copy of a part of the monam program.
+It is located at 76($4c) bytes from the begin.
+
+
+3.08 size =  84bytes
+3.09 size = 208bytes
+
+
+
+offset inside monam.prefs + description of that value
+
+ 82 $52 win2345 layout
+
+offset  3.09
+ 84 $54 ammx_hide_3eq2
+ 85 $55 ammx_size
+ 86 $56 bank_decoding
+ 87 $57 bank_indicator
+ 88 $58 '<>' storei_hooks      ; zero or ascii, used to accent the indirect nature of storei/loadi
+ 90 $5a '!'  nan_ascii         ; ascii to signal float_nan
+ 91 $5b $pref_height_win1
+ 92 $5c pref_hight_win2
+ 93 $5d pref_hight_win3
+ 94 $5e pref_byte_win3         ; width mem window 3
+ 95 $5f pref_byte_win5
+ 96 $60 pref_screen_size       ; width, height of saved pref in char, this default must be zero.
+        it is used to test if you started in the same resolution to setup the windows
+100 $64 '['=$5b
+        A maximum of 30 block s can be saved, see register_blocks.txt
+        pref_ereg_setup
+        dc.b   8,0,1                            ; da - no skip, 8 lines, 0 start, routine_1
+        dc.b $88,0,3                            ; e3
+        dc.b $88,0,2                            ; fb
+        dc.b $98,0,8                            ; e0..23  9
+        dc.b $88,0,$f                           ; float  12
+        dc.b $08,0,$e                           ; e      12
+        dc.b $88,8,$e                           ; e      12
+        dc.b $88,16,$e                          ; e      12
+        dc.b $88,0,$d                           ; d      bwlq
+        dc.b $08,0,5                            ; e      bwlq
+        dc.b $88,8,5                            ; e      bwlq
+        dc.b $88,16,5                           ; e      bwlq
+        dc.b $85,23,$c                          ; c 080 control
+        dc.b $88,0,$a                           ; a addr
+        dc.b $88,0,$b                           ; b addr
+        dc.b $8a,0,$11                          ; m addr
+        dc.b 0   ;end top content
+        dc.b 1,0,0                              ; status integer&float, pc
+        dc.b 0   ;end bottom content
+199 $c7 ']'=$5d
+200 $c8 pref_avoid_exponent
+201 $c9 pref_fix_apollo_edit   ; fix 'tron' edit bug (free now)
+202 $ca pref_dapref_int        ; place integers between data & addr if enough space
+203 $cb pref_file_requester
+204 $cc pref_mem_range         ; 0-$8000 & $DFExxx
+205 $cd pref_highlight_disabled
+206 $ce ink_fpu_sr             ; 0=grey 1=black 2=white 3=blue color of fpu status characters in pc line
+207 $cf pre_copr               ; zero or char to put before copper instruction
+
+******
+
+devpac variables given to monam
+----------------------------
+
+located relative to the first instuction of monam
+
+0  w $6000 = bra
+2  w -
+4  l id = $4d4f4e20 = 'MON ' 
+8  l pt monam_prefs = 36bytes from 0
+12 l size monam_prefs
+16 l id = 0  or  $44455620 = 'DEV ' when devpac has set the next vars:
+20 l ?                350
+24 l seglist          174
+28 l labels_pt
+32 l libfile_pt       310
+36 prefs

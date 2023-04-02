@@ -1,0 +1,17 @@
+Quick devpac 
+
+
+click devpac
+
+menu: Project/Load
+ Src/attnflags.s
+
+Menu: program/Assemble
+ window assembling
+
+Menu: Program/Debug
+
+Debugger MonAm (see picture MonAm_devpac_1.png)
+
+control-C (quit task running?)
+Y

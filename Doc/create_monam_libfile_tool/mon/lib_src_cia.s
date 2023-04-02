@@ -1,0 +1,38 @@
+; cia a & b
+
+&cB_pra	EQU	$BFD000
+&cB_prb	EQU	$BFD100
+&cB_Dra	EQU	$BFD200
+&cB_Drb	EQU	$BFD300
+&cB_TaL	EQU	$BFD400
+&cB_TaH	EQU	$BFD500
+&cB_TbL	EQU	$BFD600
+&cB_TbH	EQU	$BFD700
+&cB_HorL	EQU	$BFD800
+&cB_HorM	EQU	$BFD900
+&cB_HorH	EQU	$BFDA00
+&cB_seri	EQU	$BFDC00
+&cB_icr	EQU	$BFDD00
+&cB_cra	EQU	$BFDE00
+&cB_crb	EQU	$BFDF00
+
+&cA_MouseK	EQU	$BFE001
+&cA_Parallel	EQU	$BFE101
+&cA_Dra	EQU	$BFE201
+&cA_Drb	EQU	$BFE301
+&cA_TaL	EQU	$BFE401
+&cA_TaH	EQU	$BFE501
+&cA_TbL	EQU	$BFE601
+&cA_TbH	EQU	$BFE701
+&cA_VblL	EQU	$BFE801
+&cA_VblM	EQU	$BFE901
+&cA_VblH	EQU	$BFEA01
+&cA_Keybrd	EQU	$BFEC01
+&cA_icr	EQU	$BFED01
+&cA_cra	EQU	$BFEE01
+&cA_crb	EQU	$BFEF01
+
+
+
+
+

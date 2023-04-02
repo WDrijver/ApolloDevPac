@@ -1,0 +1,64 @@
+HELP for UAE Debugger                                                                          MonAm 
+         -----------------------
+
+  g [<address>]         Start execution at the current address or <address>.                   <a>r pc=address
+  c                     Dump state of the CIA, disk drives and custom registers.
+  r                     Dump state of the CPU.
+  r <reg> <value>       Modify CPU registers (Dx,Ax,USP,ISP,VBR,...).                          <a>r
+  m <address> [<lines>] Memory dump starting at <address>.                                     s
+  d <address> [<lines>] Disassembly starting at <address>.                                     p
+  t [instructions]      Step one or more instructions.                                         r i
+  z                     Step through one instruction - useful for JSR, DBRA etc.               <cntl>t
+  f                     Step forward until PC in RAM ("boot block finder").
+  f <address>           Add/remove breakpoint.                                                 <cntl>b
+  fa <address> [<start>] [<end>]
+                        Find effective address <address>.
+  fi                    Step forward until PC points to RTS, RTD or RTE.                       r r
+  fi <opcode>           Step forward until PC points to <opcode>.                              r o
+  fp "<name>"/<addr>    Step forward until process <name> or <addr> is active.
+  fl                    List breakpoints.                                                      help
+  fd                    Remove all breakpoints.                                                <cntl>k
+  fs <val> <mask>       Break when (SR & mask) = val.
+  f <addr1> <addr2>     Step forward until <addr1> <= PC <= <addr2>.                           r p
+  e                     Dump contents of all custom registers, ea = AGA colors.
+  i [<addr>]            Dump contents of interrupt and trap vectors.
+  il [<mask>]           Exception breakpoint.
+  o <0-2|addr> [<lines>]View memory as Copper instructions.                                    <a>t
+  od                    Enable/disable Copper vpos/hpos tracing.
+  ot                    Copper single step trace.
+  ob <addr>             Copper breakpoint.
+  H[H] <cnt>            Show PC history (HH=full CPU info) <cnt> instructions.                 h
+  C <value>             Search for values like energy or lifes in games.                       g
+  Cl                    List currently found trainer addresses.
+  D[idxzs <[max diff]>] Deep trainer. i=new value must be larger, d=smaller,
+                        x = must be same, z = must be different, s = restart.
+  W <address> <values[.x] separated by space> Write into Amiga memory.                         <a>e
+  W <address> 'string' Write into Amiga memory.
+  w <num> <address> <length> <R/W/I/F/C> [<value>[.x]] (read/write/opcode/freeze/mustchange).
+                        Add/remove memory watchpoints.
+  wd [<0-1>]            Enable illegal access logger. 1 = enable break.
+  S <file> <addr> <n>   Save a block of Amiga memory.                                          s
+  s "<string>"/<values> [<addr>] [<length>]
+                        Search for string/bytes.                                               g
+  T or Tt               Show exec tasks and their PCs.
+  Td,Tl,Tr,Ts,Ti,TO     Show devices, libraries, resources, residents, interrupts, doslist.
+  b                     Step to previous state capture position.
+  M<a/b/s> <val>        Enable or disable audio channels, bitplanes or sprites.
+  sp <addr> [<addr2][<size>] Dump sprite information.
+  di <mode> [<track>]   Break on disk access. R=DMA read,W=write,RW=both,P=PIO.
+                        Also enables level 1 disk logging.
+  did <log level>       Enable disk logging.
+  dj [<level bitmask>]  Enable joystick/mouse input debugging.
+  smc [<0-1>]           Enable self-modifying code detector. 1 = enable break.
+  dm                    Dump current address space map.
+  v <vpos> [<hpos>]     Show DMA data (accurate only in cycle-exact mode).
+                        v [-1 to -4] = enable visual DMA debugger.
+  ?<value>              Hex ($ and 0x)/Bin (%)/Dec (!) converter.                              o
+  x                     Close debugger.                                                        <cntl>c
+  xx                    Switch between console and GUI debugger.                               <left-amiga>m
+  mg <address>          Memory dump starting at <address> in GUI.                              s
+  dg <address>          Disassembly starting at <address> in GUI.                              p
+  q                     Quit the emulator. You don't want to use this command.
+
+UAE is an amiga emulator.
+MonAm is a debugger expected to be run on hardware.

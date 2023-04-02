@@ -1,0 +1,32 @@
+devpac complete_package release logfile
+(debugger changes are in debug_changes.txt)
+
+
+dec 2022
+________
+
+cleared up the main folder icon view
+added:
+doc/monam_libfile_format.txt
+doc/monam_regfile_format.txt
+doc/libfile_index.txt         - library/resource currently in libfile
+monam.regfile                 - contains names used for custom registers
+
+
+nov 2022
+________
+
+first complete package release in OS9.0
+assembler settings: optimisations forward branches 'warn' to 'off'. 
+
+
+jan 2023
+--------
+
+doc/create_monam_libfile_tool - stuff used to create the libfiles
+
+
+mrt 2023
+________
+
+complete package release in OS9.3

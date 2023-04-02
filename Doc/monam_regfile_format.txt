@@ -1,0 +1,22 @@
+************************
+* monam.regfile format *
+************************
+
+currently only gets looked at if 
+$BFD000 <= addr <$E00000
+
+
+
+regfile example with 1 entry:
+_____________________________
+
+begin
+   dc.l    $420103F0                      ; id/lib version
+   dc.l    end-begin-8                    ; file length -8 ; num of bytes to follow (load)
+
+   dc.l    2                              ; text size in LONG
+   dc.b    'Joy1Dat',0                    ; Joy1 Dat0
+   dc.w    $DFF012                        ; long addr pt	
+ 
+   dc.l    0                              ; end
+end

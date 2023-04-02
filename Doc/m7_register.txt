@@ -1,0 +1,44 @@
+M7 is one of the 10 monam Memory_Registers (page 153)
+
+As default it points to the extended_register buffer.
+
+- Register M7 defaults to extended_register state, for easy edit.
+   entry layout: 8*64bit. entries: Data, Addr, B_addr, E0, e8, e16, Float
+   The old_part will NOT change, there is a very good 'Register=' for that.
+
+M7 offset table (hex)
+current register state:
+0000 d0  0040 a0  0080 b0    00C0 e0  0100 e8   0140 e16    0180 fp0
+0008 d1  0048 a1  0088 b1    00C8 e1  0108 e9   0148 e17    0188 fp1
+0010 d2  0050 a2  0090 b2    00D0 e2  0110 e10  0150 e18    0190 fp2
+0018 d3  0058 a3  0098 b3    00D8 e3  0118 e11  0158 e19    0198 fp3
+0020 d4  0060 a4  00A0 b4    00E0 e4  0120 e12  0160 e20    01A0 fp4
+0028 d5  0068 a5  00A8 b5    00E8 e5  0128 e13  0168 e21    01A8 fp5
+0030 d6  0070 a6  00B0 b6    00F0 e6  0130 e14  0170 e22    01B0 fp6
+0038 d7  0078 a7  00B8 b7    00F8 e7  0138 e15  0178 e23    01B8 fp7
+
+highlight compare previous copy:
+01C0 d0  0100 a0  0140 b0    0180 e0  01C0 e8   0200 e16    0240 fp0
+
+
+next offsets are not expected to stay the same:
+
+-0014 pt to start monam
+-0010 pt to lib_bases name & pt
+-000c pt to monam internal vars
+-0008 ccc_result of last timed routine
+-0004 greatest mem_size that was actualy used for highlight_buffer
+
+0280 68080 chk
+0282 ccc_begin
+0286 ccc_end
+...
+
+hight light buffer 
+
+0398       table:  num.w , m1..5 , m0 , a0..7 (, b0..7 )     ; num=$16 on 080
++2+num*4   table
++num*4     table valid mem:  num.w , [ beg , end ] , [ beg , end ] , ...
++2+num*8   table valid mem:  num.w , [ beg , end , pt_copy] , [ beg , end , pt_copy] , ...
++2+num*$c (= pt_copy) [ ram copy of beg..end ] , [ ram copy of beg..end ]
+i

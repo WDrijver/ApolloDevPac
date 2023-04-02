@@ -1,0 +1,11 @@
+; apollo_afloat_assemble_script
+;
+;
+; line 1  assembles afloat.s (text) to afloat (program) using VASM
+;         (with symbols and linedebug information included in program)
+;
+; line 2  start the debugger and loads the program and the text.
+;
+;
+//VASM/vasmm68k_mot -Fhunkexe -kick1hunks -m68080 -linedebug -quiet -o afloat afloat.s 
+/monam afloat

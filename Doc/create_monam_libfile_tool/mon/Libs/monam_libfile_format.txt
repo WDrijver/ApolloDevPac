@@ -1,0 +1,44 @@
+************************
+* monam.libfile format *
+************************
+
+lib_number:
+1 = exec
+2 = intuition
+3 = graphics
+4 = dos
+
+
+
+libfile example with 1 entry:
+_____________________________
+
+begin
+   dc.l    $420003F0                      ; id/lib version, located at 2440(a6) is checked at i0008d06
+   dc.l    end-begin-8                    ; file length -8 ; num of bytes to follow (load)
+
+   dc.l    3                              ; text size in LONG
+   dc.b    'Supervisor',0,0               ; supe rvis or00
+   dc.w    1,-30                          ; lib_number, offset   -> will be changed to long addr pt in monam	
+ 
+   dc.l    0                              ; end (3.08)
+end
+
+
+
+extended example, added after end: (again only 1 entry)
+__________________________________
+
+   dc.b    'Debug',0,0,0                  ; id/marks extended libfile, compatible marker.
+   dc.w    1,-114
+
+   dc.l    4                              ; text size in LONG
+   dc.b    'AllocFileRequest'             ; Allo cFil eReq uest
+   dc.w    5,-30                          ; lib_number, offset
+
+   dc.l    0                              ; end (3.09)
+
+   dc.b	   'asl.library',0                ; name lib 5
+
+   dc.b    0                              ; end libnames
+end
